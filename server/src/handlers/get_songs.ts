@@ -1,22 +1,20 @@
 
+import { db } from '../db';
+import { songsTable } from '../db/schema';
 import { type Song } from '../schema';
+import { desc } from 'drizzle-orm';
 
 export const getSongs = async (): Promise<Song[]> => {
-  // This is a placeholder declaration! Real code should be implemented here.
-  // The goal of this handler is fetching all songs from the database.
-  // This will return a list of predefined songs for the music player.
-  return [
-    {
-      id: 1,
-      name: "Sample Song 1",
-      audioUrl: "https://example.com/audio/song1.mp3",
-      created_at: new Date()
-    },
-    {
-      id: 2,
-      name: "Sample Song 2", 
-      audioUrl: "https://example.com/audio/song2.mp3",
-      created_at: new Date()
-    }
-  ];
+  try {
+    // Query all songs ordered by creation date (newest first)
+    const results = await db.select()
+      .from(songsTable)
+      .orderBy(desc(songsTable.created_at))
+      .execute();
+
+    return results;
+  } catch (error) {
+    console.error('Failed to fetch songs:', error);
+    throw error;
+  }
 };
